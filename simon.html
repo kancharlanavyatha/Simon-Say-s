@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simon Game</title>
+
+    <style>
+        body {
+            background-color: #011F3F;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 3rem;
+            color: #FEF2BF;
+            margin-top: 40px;
+        }
+
+        h2 {
+            color: white;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+        }
+
+        .row {
+            display: flex;
+        }
+
+        .btn {
+            width: 150px;
+            height: 150px;
+            margin: 15px;
+            border-radius: 20px;
+            border: 8px solid black;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .red { background-color: red; }
+        .green { background-color: green; }
+        .yellow { background-color: yellow; }
+        .blue { background-color: blue; }
+
+        .btn:active {
+            transform: scale(0.95);
+            opacity: 0.7;
+        }
+
+        .pressed {
+            box-shadow: 0 0 20px white;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Simon Game</h1>
+    <h2>Press any key to start the game</h2>
+
+    <div class="container">
+        <div class="row">
+            <div class="btn red"></div>
+            <div class="btn green"></div>
+        </div>
+        <div class="row">
+            <div class="btn yellow"></div>
+            <div class="btn blue"></div>
+        </div>
+    </div>
+
+    <script>
+        // Game variables
+        let buttonColors = ["red", "green", "yellow", "blue"];
+        let gamePattern = [];
+        let userClickedPattern = [];
+        let started = false;
+        let level = 0;
+
+        // Start game
+        document.addEventListener("keypress", function () {
+            if (!started) {
+                level = 0;
+                nextSequence();
+                started = true;
+            }
+        });
+
+        // Generate next sequence
+        function nextSequence() {
+
+            userClickedPattern = [];
+            level++;
+            document.querySelector("h2").textContent = "Level " + level;
+
+            let randomNumber = Math.floor(Math.random() * 4);
+            let randomChosenColor = buttonColors[randomNumber];
+            gamePattern.push(randomChosenColor);
+
+            animatePress(randomChosenColor);
+        }
+
+        // Button clicks
+        let buttons = document.querySelectorAll(".btn");
+
+        buttons.forEach(function (button) {
+            button.addEventListener("click", function () {
+
+                let userChosenColor = this.classList[1];
+                userClickedPattern.push(userChosenColor);
+
+                animatePress(userChosenColor);
+                checkAnswer(userClickedPattern.length - 1);
+            });
+        });
+
+        // Check answer
+        function checkAnswer(currentIndex) {
+
+            if (gamePattern[currentIndex] === userClickedPattern[currentIndex]) {
+
+                if (userClickedPattern.length === gamePattern.length) {
+                    setTimeout(function () {
+                        nextSequence();
+                    }, 1000);
+                }
+
+            } else {
+                document.querySelector("h2").textContent = "Game Over! Press any key to restart";
+                startOver();
+            }
+        }
+
+        // Animation
+        function animatePress(color) {
+            let activeButton = document.querySelector("." + color);
+            activeButton.classList.add("pressed");
+
+            setTimeout(function () {
+                activeButton.classList.remove("pressed");
+            }, 200);
+        }
+
+        // Restart
+        function startOver() {
+            level = 0;
+            gamePattern = [];
+            started = false;
+        }
+    </script>
+
+</body>
+</html>
